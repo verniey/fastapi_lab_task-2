@@ -12,7 +12,7 @@ def get_menus(db: Session):
 def get_menu(db: Session, menu_id: UUID):
     menu = db.query(models.Menu).filter(models.Menu.id == menu_id).first()
     if not menu:
-        return None
+        return menu
 
     submenus_count, dishes_count = menu.get_submenus_and_dishes_count(db)
 
@@ -42,14 +42,13 @@ def update_menu(db: Session, menu_id: UUID, menu_update: schemas.MenuUpdate):
         db_menu.description = menu_update.description
         db.commit()
         db.refresh(db_menu)
-        return db_menu
-    return None
+    return db_menu
 
 def delete_menu(db: Session, menu_id: UUID):
     db_menu = db.query(models.Menu).filter(models.Menu.id == menu_id).first()
     if db_menu:
         db.delete(db_menu)
         db.commit()
-        return True
+        return db_menu
     else:
-        return False
+        return db_menu

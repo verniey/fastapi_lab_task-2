@@ -17,7 +17,6 @@ class Menu(Base):
     description = Column(String, index=True)
     submenus_count = Column(Integer, default=0)
     dishes_count = Column(Integer, default=0)
-    # Relationship with Submenu table using a one-to-many relationship
     submenus = relationship("Submenu", back_populates="menu", cascade="all, delete")
 
 
@@ -28,7 +27,6 @@ class Menu(Base):
             .filter(Submenu.menu_id == self.id)
             .count()
         )
-
         dishes_count = (
             session.query(Dish)
             .join(Submenu, Dish.submenu_id == Submenu.id)
