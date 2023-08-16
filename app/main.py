@@ -15,8 +15,6 @@ from app.routers.dishes import dish_router
 from app.routers.submenus import submenu_router
 from app.models import core as models
 
-
-
 app = FastAPI()
 
 app.include_router(menu_router)
