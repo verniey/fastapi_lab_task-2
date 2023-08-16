@@ -20,6 +20,22 @@ class Menu(Base):
     # Relationship with Submenu table using a one-to-many relationship
     submenus = relationship("Submenu", back_populates="menu", cascade="all, delete")
 
+    def get_submenus_and_dishes_count(self, session):
+    
+        submenus_count = (
+            session.query(Submenu)
+            .filter(Submenu.menu_id == self.id)
+            .count()
+        )
+        
+        dishes_count = (
+            session.query(Dish)
+            .join(Submenu, Dish.submenu_id == Submenu.id)
+            .filter(Submenu.menu_id == self.id)
+            .count()
+        )
+        return submenus_count, dishes_count
+
 
 class Submenu(Base):
     __tablename__ = "submenus"
@@ -45,16 +61,3 @@ class Dish(Base):
     
     submenu_id = Column(UUID(as_uuid=True), ForeignKey("submenus.id"))
     submenu = relationship("Submenu", back_populates="dishes")
-
-
-# @event.listens_for(Submenu.dishes, "append")
-# @event.listens_for(Submenu.dishes, "remove")
-# def update_dishes_count(target, value, initiator):
-#     target.dishes_count = len(target.dishes)
-
-
-# @event.listens_for(Menu.submenus, "append")
-# @event.listens_for(Menu.submenus, "remove")
-# def update_submenus_count(target, value, initiator):
-#     target.submenus_count = len(target.submenus)
-#     target.dishes_count = sum(len(submenu.dishes) for submenu in target.submenus)

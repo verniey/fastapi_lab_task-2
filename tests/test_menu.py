@@ -30,6 +30,29 @@ def test_get_menus_empty(db: Session):
     assert response.status_code == 200
     assert response.json() == []
 
+def test_get_menus_not_empty(db: Session):
+    # Create some menus in the database
+    menu_create_payloads = [
+        {"title": "Menu 1", "description": "Description 1"},
+        {"title": "Menu 2", "description": "Description 2"},
+    ]
+    for payload in menu_create_payloads:
+        client.post("/api/v1/menus/", json=payload)
+   
+    # Send a GET request to retrieve all menus
+    response = client.get("/api/v1/menus/")
+   
+    # Verify the response status code and JSON data
+    assert response.status_code == 200
+    retrieved_menus = response.json()
+    assert len(retrieved_menus) == len(menu_create_payloads)
+   
+    for i, payload in enumerate(menu_create_payloads):
+        assert retrieved_menus[i]["title"] == payload["title"]
+        assert retrieved_menus[i]["description"] == payload["description"]
+        assert retrieved_menus[i]["submenus_count"] == 0
+        assert retrieved_menus[i]["dishes_count"] == 0
+
 def test_create_menu(db: Session):
     # Prepare payload for creating a menu
     menu_create_payload = {

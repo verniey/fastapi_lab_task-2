@@ -28,36 +28,12 @@ menu_router = APIRouter(prefix='/api/v1/menus')
 def get_menus(db: Session = Depends(get_db)):
     return menu_service.get_menus(db)
 
-def test_get_menus_not_empty(db: Session):
-    # Create some menus in the database
-    menu_create_payloads = [
-        {"title": "Menu 1", "description": "Description 1"},
-        {"title": "Menu 2", "description": "Description 2"},
-    ]
-    for payload in menu_create_payloads:
-        client.post("/api/v1/menus/", json=payload)
-   
-    # Send a GET request to retrieve all menus
-    response = client.get("/api/v1/menus/")
-   
-    # Verify the response status code and JSON data
-    assert response.status_code == 200
-    retrieved_menus = response.json()
-    assert len(retrieved_menus) == len(menu_create_payloads)
-   
-    for i, payload in enumerate(menu_create_payloads):
-        assert retrieved_menus[i]["title"] == payload["title"]
-        assert retrieved_menus[i]["description"] == payload["description"]
-        assert retrieved_menus[i]["submenus_count"] == 0
-        assert retrieved_menus[i]["dishes_count"] == 0
-
 @menu_router.get("/{menu_id}", response_model=schemas.Menu)
 def get_menu(menu_id: Optional[UUID], db: Session = Depends(get_db)):
     
     menu = menu_service.get_menu(db, menu_id)
     if menu is None:
         raise HTTPException(status_code=404, detail=f'menu not found')
-
 
     return menu
 
@@ -81,7 +57,7 @@ def update_menu(menu_id: UUID, menu_update: schemas.MenuUpdate, db: Session = De
     if db_menu:
         return db_menu
     else:
-        raise HTTPException(status_code=404, detail="Menu not found")
+        raise HTTPException(status_code=404, detail="menu not found")
 
 
 

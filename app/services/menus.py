@@ -8,13 +8,13 @@ from sqlalchemy import func
 def get_menus(db: Session):
     return db.query(models.Menu).all()
 
+
 def get_menu(db: Session, menu_id: UUID):
     menu = db.query(models.Menu).filter(models.Menu.id == menu_id).first()
-    if not menu: return None
+    if not menu:
+        return None
 
-    submenus_count = db.query(func.count(models.Submenu.id)).filter(models.Submenu.menu_id == menu_id).scalar()
-
-    dishes_count = db.query(func.count(models.Dish.id)).join(models.Submenu).filter(models.Submenu.menu_id == menu_id).scalar()
+    submenus_count, dishes_count = menu.get_submenus_and_dishes_count(db)
 
     menu.submenus_count = submenus_count
     menu.dishes_count = dishes_count
