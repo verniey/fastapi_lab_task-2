@@ -4,7 +4,6 @@ from sqlalchemy.orm import Session
 from typing import List, Dict
 
 from app.models.database import get_db
-from app.models.database import get_db
 from app.models import schemas
 from app.models.core import Dish, Submenu
 from typing import List
@@ -17,7 +16,7 @@ from starlette.status import HTTP_201_CREATED
 
 from app.services import dishes as dish_service
 
-from fastapi.encoders import jsonable_encoder  # Import the jsonable_encoder function
+from fastapi.encoders import jsonable_encoder
 from typing import List, Optional
 from app.models import core as models
 dish_router = APIRouter(prefix='/api/v1/menus')

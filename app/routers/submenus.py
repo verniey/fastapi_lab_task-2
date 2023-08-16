@@ -29,6 +29,9 @@ def get_submenus(menu_id: UUID, db: Session = Depends(get_db)):
 @submenu_router.get("/{menu_id}/submenus/{submenu_id}")
 def get_submenu(menu_id: UUID, submenu_id: UUID, db: Session = Depends(get_db)):
     submenu = submenu_service.get_submenu(db, submenu_id)
+    if not submenu:
+        return JSONResponse(content={"detail":"submenu not found"}, status_code=404)
+
     return submenu
 
 @submenu_router.post("/{menu_id}/submenus", response_model=schemas.Submenu, status_code=HTTP_201_CREATED)
@@ -47,6 +50,7 @@ def delete_submenu(menu_id: UUID, submenu_id: UUID, db: Session = Depends(get_db
     deleted = submenu_service.delete_submenu(db, submenu_id)
     if deleted:
         return {"status": True, "message": "The submenu has been deleted"}
+        
+    return JSONResponse(content={"detail":"submenu not found"}, status_code=404)
 
-    else:
-        return JSONResponse(content={"detail":"submenu not found"}, status_code=404)
+    

@@ -20,6 +20,7 @@ class Menu(Base):
     # Relationship with Submenu table using a one-to-many relationship
     submenus = relationship("Submenu", back_populates="menu", cascade="all, delete")
 
+
     def get_submenus_and_dishes_count(self, session):
     
         submenus_count = (
@@ -27,7 +28,7 @@ class Menu(Base):
             .filter(Submenu.menu_id == self.id)
             .count()
         )
-        
+
         dishes_count = (
             session.query(Dish)
             .join(Submenu, Dish.submenu_id == Submenu.id)
@@ -44,13 +45,11 @@ class Submenu(Base):
     description = Column(String, nullable=True, unique=False)
     dishes_count = Column(Integer, default=0)
     menu_id = Column(UUID(as_uuid=True), ForeignKey("menus.id"))
-
-    # Relationship with Menu table using a many-to-one relationship
+    
     menu = relationship("Menu", back_populates="submenus")
     dishes = relationship("Dish", back_populates="submenu", cascade="all, delete")
 
     
-
 
 class Dish(Base):
     __tablename__ = "dishes"

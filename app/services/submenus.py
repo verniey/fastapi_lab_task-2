@@ -27,7 +27,7 @@ def get_submenu(db: Session, submenu_id: UUID):
     db_submenu = db.query(models.Submenu).filter(models.Submenu.id == submenu_id).first()
 
     if db_submenu is None:
-        return JSONResponse(content={"detail":"submenu not found"}, status_code=404)
+        return db_submenu
     else:
         dishes_count = len(db_submenu.dishes)  
     
@@ -42,8 +42,14 @@ def get_submenu(db: Session, submenu_id: UUID):
     
 def create_submenu(db: Session, submenu: schemas.SubmenuCreate, menu_id: UUID):
     db_menu = db.query(models.Menu).filter(models.Menu.id == menu_id).first()
-    if not db_menu:
-        raise HTTPException(status_code=404, detail="menu not found")
+    if db_menu:
+        db_submenu = models.Submenu(title=submenu.title, description=submenu.description, menu_id=menu_id)
+        db.add(db_submenu)
+        db.commit()
+        db.refresh(db_submenu)
+        return db_submenu
+
+def create_submenu_2(db: Session, submenu: schemas.SubmenuCreate, menu_id: UUID):
     db_submenu = models.Submenu(title=submenu.title, description=submenu.description, menu_id=menu_id)
     db.add(db_submenu)
     db.commit()
@@ -54,7 +60,7 @@ def create_submenu(db: Session, submenu: schemas.SubmenuCreate, menu_id: UUID):
 def update_submenu(db: Session, submenu_id: UUID, submenu_update: schemas.SubmenuUpdate):
     db_submenu = db.query(models.Submenu).filter(models.Submenu.id == submenu_id).first()
     if not db_submenu:
-        raise HTTPException(status_code=404, detail="Submenu not found")
+        raise HTTPException(status_code=404, detail="submenu not found")
 
     for key, value in submenu_update.dict(exclude_unset=True).items():
         setattr(db_submenu, key, value)
@@ -71,5 +77,4 @@ def delete_submenu(db: Session, submenu_id: UUID):
         db.query(models.Dish).filter(models.Dish.submenu_id == submenu_id).delete()
         db.delete(db_submenu)
         db.commit()
-        return True
-    return False
+    return db_submenu
