@@ -31,5 +31,4 @@ def reset_database():
     except Exception as e:
         print(f"An exception occurred while resetting the database: {e}")
 
-# Clear and reset the database on app startup
 reset_database()
