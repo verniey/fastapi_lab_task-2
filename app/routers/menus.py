@@ -60,7 +60,6 @@ def update_menu(menu_id: UUID, menu_update: schemas.MenuUpdate, db: Session = De
         raise HTTPException(status_code=404, detail="menu not found")
 
 
-
 @menu_router.delete("/{menu_id}")
 def delete_menu(menu_id: UUID, db: Session = Depends(get_db)):
     response = menu_service.delete_menu(db, menu_id)
